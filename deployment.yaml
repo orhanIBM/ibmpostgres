@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fhir
+  template:
+    metadata:
+      labels:
+        app: fhir
+    spec:
+      containers:
+        - name: mypgapp
+          image: image-registry.openshift-image-registry.svc:5000/dev-oy/mypgapp
+          args: ["--spring.application.json=$(BINDING)"]
+          env:
+          - name: BINDING
+            valueFrom:
+              secretKeyRef:
+                name: binding-client-demo-postgres
+                key: binding
+          ports:
+            - containerPort: 8080
